@@ -6,9 +6,10 @@ export async function generateStory(topic: string, apiKey: string){
       'Authorization': `Bearer ${apiKey}`
     },
     body: JSON.stringify({
-      model: 'llama-3.1-8b-instant',
-      messages: [{role:'user', content: `Write viral story on: ${topic}`}],
-      max_tokens: 500
+      model: 'openai/gpt-oss-20b',
+      messages: [{role:'user', content: `Write a viral 30-second story script on: ${topic}. Make it hooky.`}],
+      max_tokens: 500,
+      temperature: 0.8
     })
   })
   if(!res.ok) throw new Error(await res.text())
