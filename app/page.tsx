@@ -1,147 +1,101 @@
 "use client";
 import { useState } from "react";
 
-const WORKFLOWS = [
-  { id: "ai", name: "AI to Video", cr: "100cr", desc: "Idea to faceless video", hot: true },
-  { id: "image", name: "Image to Video", cr: "80cr", desc: "Animate any photo", hot: false },
-  { id: "stock", name: "Stock to Video", cr: "60cr", desc: "Stock + script" },
-  { id: "banana", name: "Banana Image", cr: "5cr", desc: "Text to image", hot: true },
-  { id: "avatar", name: "AI Avatar", cr: "120cr", desc: "Clone + speak" },
-  { id: "audio", name: "Audio to Video", cr: "80cr", desc: "Podcast to video" },
-  { id: "url", name: "URL to Video", cr: "70cr", desc: "Blog link to video", new: true },
-  { id: "ppt", name: "PPT to Video", cr: "70cr", desc: "Presentation to video", new: true },
-  { id: "script", name: "Script to Video", cr: "90cr", desc: "Long script" },
-  { id: "translate", name: "Translate Video", cr: "50cr", desc: "80+ languages", new: true },
-  { id: "series", name: "Video Series", cr: "200cr", desc: "Auto channel", new: true },
-  { id: "character", name: "Character Clone", cr: "150cr", desc: "Your face clone", hot: true },
-  { id: "longshort", name: "Long to Short", cr: "20cr", desc: "Best 40sec + highlights" },
-  { id: "api", name: "API / Auto", cr: "Custom", desc: "Zapier + API" },
+const W = [
+  {id:"ai", n:"AI to Video", c:"100cr", d:"Idea to video"},
+  {id:"image", n:"Image to Video", c:"80cr", d:"Animate photo"},
+  {id:"stock", n:"Stock to Video", c:"60cr", d:"Stock + script"},
+  {id:"banana", n:"Banana Image", c:"5cr", d:"Text to image", hot:true},
+  {id:"avatar", n:"AI Avatar", c:"120cr", d:"Clone + speak"},
+  {id:"audio", n:"Audio to Video", c:"80cr", d:"Podcast to video"},
+  {id:"url", n:"URL to Video", c:"70cr", d:"Blog link", new:true},
+  {id:"ppt", n:"PPT to Video", c:"70cr", d:"PPT to video", new:true},
+  {id:"script", n:"Script to Video", c:"90cr", d:"Long script"},
+  {id:"translate", n:"Translate Video", c:"50cr", d:"80+ langs", new:true},
+  {id:"series", n:"Video Series", c:"200cr", d:"Auto channel"},
+  {id:"character", n:"Character Clone", c:"150cr", d:"Face clone"},
+  {id:"longshort", n:"Long to Short", c:"20cr", d:"Best 40sec"},
+  {id:"api", n:"API / Auto", c:"Custom", d:"Zapier"},
 ];
 
-export default function FlikibaapV2() {
-  const [activeMode, setActiveMode] = useState("ai");
-  const [topic, setTopic] = useState("");
-  const [result, setResult] = useState("");
-  const [img, setImg] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPlans, setShowPlans] = useState(false);
-  const [credits] = useState(6000);
+export default function Page(){
+  const [mode,setMode]=useState("ai");
+  const [topic,setTopic]=useState("");
+  const [res,setRes]=useState("");
+  const [img,setImg]=useState("");
+  const [load,setLoad]=useState(false);
+  const [showPlans,setShowPlans]=useState(false);
+  const cur = W.find(x=>x.id===mode);
 
-  const current = WORKFLOWS.find(w=>w.id===activeMode);
-
-  const handleGenerate = async () => {
-    if(!topic.trim()) return alert("Pehle topic/prompt likho!");
-    setLoading(true); setResult(""); setImg("");
-    try {
-      if(activeMode==="banana"){
-        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(topic)}?width=1024&height=1024&seed=${Math.floor(Math.random()*1000)}&nologo=true`;
+  const gen = async()=>{
+    if(!topic.trim()){alert("Topic likho!"); return;}
+    setLoad(true); setRes(""); setImg("");
+    try{
+      if(mode==="banana"){
+        const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(topic)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*10000)}`;
         setImg(url);
-        setResult(`✅ Banana Image Generated!\nPrompt: ${topic}\n\nCredits Used: 5cr\nRemaining: ${credits-5}cr`);
-      } else if (activeMode==="url" || activeMode==="ppt"){
-        setResult(`🔗 ${current?.name} - Processing...\n\nFetching: ${topic}\n\nGenerating script from content...\n\n(This will be live in Step 3 - Abhi mock script de raha hu)\n\n[HOOK] ${topic} is the future...\n[SCENE 1] Introduction...\n[SCENE 2] Main content...\n\nCredits: ${current?.cr}`);
-      } else {
-        const res = await fetch("/api/generate",{method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({topic})});
-        const data = await res.json();
-        setResult(data.script || "Generated successfully!");
+        setRes(`✅ Image Generated - 5cr used`);
+      }else{
+        const r=await fetch("/api/generate",{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({topic})});
+        const d=await r.json();
+        setRes(d.script || "Done");
       }
-    } catch(e){ setResult("Error - API check karo"); }
-    setLoading(false);
-  };
-
-  const handleLongToShort = () => {
-    if(!result) return alert("Pehle video generate karo!");
-    setResult(r => r + `\n\n--- ✨ LONG TO SHORT AUTO (20cr) ---\n✅ Best 40 Sec: 00:00 - 00:40 (Viral Hook)\n✅ Highlight 1: 01:10 - 01:45\n✅ Highlight 2: 02:30 - 03:00\n✅ Highlight ALL: Auto captions added`);
+    }catch(e){setRes("Error - API key check karo");}
+    setLoad(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#FCFCF9] text-zinc-900 font-sans">
-      {/* TOP BAR - VidRush style */}
-      <div className="h-14 border-b bg-white flex items-center justify-between px-4 sticky top-0 z-50">
-        <div className="flex items-center gap-6">
-          <div className="font-black text-xl tracking-tight">F<span className="text-[#FF2D6B]">likibaap</span></div>
-          <div className="hidden md:flex gap-2 text-sm">
-            <div className="px-3 py-1.5 bg-zinc-900 text-white rounded-full">Video Studio</div>
-            <div className="px-3 py-1.5 bg-zinc-100 rounded-full">Brand Kit</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="text-xs md:text-sm bg-zinc-100 border px-3 py-1.5 rounded-full">💎 {credits} Credits - Standard</div>
-          <button onClick={()=>setShowPlans(true)} className="bg-zinc-900 text-white text-xs md:text-sm px-4 py-2 rounded-full font-bold">Plans: 10K / 18K</button>
+    <div style={{minHeight:"100vh", background:"#FCFCF9", color:"#111", fontFamily:"system-ui", overflowX:"hidden"}}>
+      <div style={{height:56, background:"#fff", borderBottom:"1px solid #e5e5e5", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 12px", position:"sticky", top:0, zIndex:10}}>
+        <div style={{fontWeight:900, fontSize:20}}>F<span style={{color:"#FF2D6B"}}>likibaap</span> <span style={{fontSize:10, background:"#111", color:"#fff", padding:"2px 6px", borderRadius:20, marginLeft:6}}>V2 WHITE</span></div>
+        <div style={{display:"flex", gap:8, alignItems:"center"}}>
+          <div style={{fontSize:11, background:"#f4f4f5", border:"1px solid #e4e4e7", padding:"6px 10px", borderRadius:20}}>💎 6000 Credits</div>
+          <button onClick={()=>setShowPlans(true)} style={{background:"#111", color:"#fff", fontSize:12, padding:"8px 14px", borderRadius:20, fontWeight:800, border:0}}>Plans 10K/18K</button>
         </div>
       </div>
 
-      <div className="flex">
-        {/* SIDEBAR - Fliki style */}
-        <div className="hidden md:block w-[220px] border-r bg-white min-h-[calc(100vh-56px)] p-3">
-          <div className="text-[11px] font-bold text-zinc-400 tracking-widest mb-3">WORKFLOWS</div>
-          {WORKFLOWS.map(w=>(
-            <div key={w.id} onClick={()=>setActiveMode(w.id)} className={`p-2.5 rounded-xl cursor-pointer mb-1 flex justify-between items-center text-sm ${activeMode===w.id ? 'bg-zinc-900 text-white' : 'hover:bg-zinc-100'}`}>
-              <span>{w.name}</span><span className="text-[10px] opacity-70">{w.cr}</span>
+      <div style={{padding:12, maxWidth:1100, margin:"0 auto"}}>
+        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:16}}>
+          {W.map(w=>(
+            <div key={w.id} onClick={()=>setMode(w.id)} style={{background: mode===w.id?"#111":"#fff", color: mode===w.id?"#fff":"#111", border: mode===w.id?"2px solid #111":"1px solid #e5e5e5", borderRadius:16, padding:12, cursor:"pointer", position:"relative"}}>
+              {w.hot && <span style={{position:"absolute", top:-6, right:-6, background:"#FF2D6B", color:"#fff", fontSize:8, padding:"2px 6px", borderRadius:20, fontWeight:800}}>HOT</span>}
+              {w.new && <span style={{position:"absolute", top:-6, right:-6, background:"#111", color:"#fff", fontSize:8, padding:"2px 6px", borderRadius:20, fontWeight:800}}>NEW</span>}
+              <div style={{fontWeight:800, fontSize:13}}>{w.n}</div>
+              <div style={{fontSize:11, opacity:0.7}}>{w.d}</div>
+              <div style={{marginTop:6, fontSize:10, background: mode===w.id?"#222":"#f4f4f5", display:"inline-block", padding:"2px 8px", borderRadius:20}}>{w.c}</div>
             </div>
           ))}
         </div>
 
-        {/* MAIN */}
-        <div className="flex-1 p-3 md:p-6 max-w-6xl mx-auto w-full">
-          {/* WORKFLOW GRID - Pictory + Fliki mix */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {WORKFLOWS.map(w=>(
-              <div key={w.id} onClick={()=>setActiveMode(w.id)} className={`relative bg-white border rounded-2xl p-4 cursor-pointer transition-all ${activeMode===w.id ? 'border-zinc-900 shadow-lg scale-[1.02]' : 'border-zinc-200 hover:border-zinc-400'}`}>
-                {w.hot && <span className="absolute -top-2 -right-2 bg-[#FF2D6B] text-white text-[9px] px-2 py-0.5 rounded-full font-bold">HOT</span>}
-                {w.new && <span className="absolute -top-2 -right-2 bg-zinc-900 text-white text-[9px] px-2 py-0.5 rounded-full font-bold">NEW</span>}
-                <div className="font-bold text-sm">{w.name}</div>
-                <div className="text-[11px] text-zinc-500 mt-0.5">{w.desc}</div>
-                <div className="mt-2 text-[11px] font-mono bg-zinc-100 inline-block px-2 py-0.5 rounded-full">{w.cr} / 4min</div>
-              </div>
-            ))}
+        <div style={{background:"#fff", border:"1px solid #e5e5e5", borderRadius:20, padding:14}}>
+          <div style={{display:"flex", justifyContent:"space-between", marginBottom:10}}>
+            <div style={{fontWeight:800, fontSize:14}}>All-in-One Studio - {cur?.n}</div>
+            <div style={{fontSize:11, background:"#111", color:"#fff", padding:"4px 8px", borderRadius:20}}>{cur?.c}</div>
           </div>
-
-          {/* INPUT AREA */}
-          <div className="bg-white border border-zinc-200 rounded-[20px] p-4 md:p-5 shadow-sm">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="font-bold">All-in-One Video Studio <span className="text-zinc-400 font-normal">- {current?.name}</span></h2>
-              <span className="text-xs bg-zinc-900 text-white px-2 py-1 rounded-full">{current?.cr}</span>
-            </div>
-            <textarea value={topic} onChange={e=>setTopic(e.target.value)} placeholder={activeMode==="banana" ? "e.g. Islamic mosque at night, cinematic, 4k" : activeMode==="url" ? "Paste Blog URL here... https://..." : "Enter your idea, script, or topic here..."} className="w-full h-28 bg-[#FCFCF9] border border-zinc-200 rounded-xl p-3 text-sm outline-none focus:border-zinc-900" />
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              <button onClick={handleGenerate} disabled={loading} className="bg-gradient-to-r from-zinc-900 to-zinc-700 text-white py-3 rounded-xl font-bold text-sm disabled:opacity-50">
-                {loading ? "Generating..." : `Generate Video - ${current?.cr}`}
-              </button>
-              <button onClick={handleLongToShort} className="bg-white border border-zinc-300 py-3 rounded-xl font-bold text-sm hover:bg-zinc-50">
-                Long to Short Auto<br/><span className="text-[10px] font-normal">Best 40 Sec + Highlight All</span>
-              </button>
-            </div>
+          <textarea value={topic} onChange={e=>setTopic(e.target.value)} placeholder={mode==="banana" ? "Image prompt: e.g. Beautiful Islamic mosque at night, cinematic 4k" : mode==="url" ? "Paste URL: https://..." : "Enter your idea, script, topic..."} style={{width:"100%", height:100, background:"#FCFCF9", border:"1px solid #e5e5e5", borderRadius:12, padding:10, fontSize:13, outline:"none", color:"#111"}} />
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginTop:10}}>
+            <button onClick={gen} disabled={load} style={{background:"linear-gradient(90deg,#111,#444)", color:"#fff", padding:12, borderRadius:12, fontWeight:800, fontSize:13, border:0}}>{load?"Generating...":`Generate - ${cur?.c}`}</button>
+            <button onClick={()=>{if(!res){alert("Pehle generate karo"); return;} setRes(r=>r+"\n\n--- LONG TO SHORT (20cr) ---\nBest 40 Sec: 00:00-00:40\nHighlight 1: 01:10-01:45\nHighlight ALL + Captions")}} style={{background:"#fff", border:"1px solid #e5e5e5", padding:12, borderRadius:12, fontWeight:800, fontSize:11}}>Long to Short<br/><span style={{fontWeight:400, fontSize:9}}>Best 40 Sec + Highlight All</span></button>
           </div>
+        </div>
 
-          {/* RESULT AREA */}
-          <div className="mt-4 bg-white border border-zinc-200 rounded-[20px] p-4 min-h-[300px]">
-            <div className="text-xs font-bold text-zinc-400 tracking-widest mb-3">VIDEO PREVIEW</div>
-            {loading && <div className="py-20 text-center text-zinc-400 animate-pulse">AI is working... VidRush + Pictory + Fliki se best bana raha hai...</div>}
-            {img && <img src={img} className="w-full max-w-[512px] mx-auto rounded-xl border mb-4" alt="generated"/>}
-            {result && <pre className="whitespace-pre-wrap text-sm leading-6 font-sans bg-[#FCFCF9] p-4 rounded-xl border">{result}</pre>}
-            {!result && !loading && !img && <div className="py-20 text-center text-zinc-400 text-sm">Result yahan ayega - Select workflow and generate</div>}
-          </div>
-
-          {/* TRUST BAR - Like Fliki */}
-          <div className="mt-6 text-center text-[11px] text-zinc-400">Trusted logic from 100M+ videos analyzed • No watermark • 1080p • 80+ voices • Islamic + Urdu support</div>
+        <div style={{marginTop:14, background:"#fff", border:"1px solid #e5e5e5", borderRadius:20, padding:14, minHeight:280}}>
+          <div style={{fontSize:10, fontWeight:800, letterSpacing:1, color:"#999", marginBottom:10}}>PREVIEW</div>
+          {load && <div style={{textAlign:"center", padding:60, color:"#999"}}>AI kaam kar raha hai...</div>}
+          {img && <img src={img} style={{width:"100%", maxWidth:512, borderRadius:12, display:"block", margin:"0 auto 12px", border:"1px solid #eee"}} alt=""/>}
+          {res && <pre style={{whiteSpace:"pre-wrap", fontSize:13, lineHeight:1.6, background:"#FCFCF9", padding:12, borderRadius:12, border:"1px solid #eee"}}>{res}</pre>}
+          {!res && !load && !img && <div style={{textAlign:"center", padding:60, color:"#aaa", fontSize:13}}>Result yahan ayega</div>}
         </div>
       </div>
 
-      {/* PLANS MODAL - FINAL */}
       {showPlans && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center z-[100] p-3" onClick={()=>setShowPlans(false)}>
-          <div className="bg-white rounded-[24px] p-6 w-full max-w-3xl grid grid-cols-1 md:grid-cols-3 gap-4" onClick={e=>e.stopPropagation()}>
-            <div className="border rounded-2xl p-4">
-              <div className="font-bold">Free</div><div className="text-2xl font-black">Rs 0</div><div className="text-xs text-zinc-500 mt-2">100 Credits = 1 Video<br/>720p, Watermark</div>
-            </div>
-            <div className="border-2 border-zinc-900 rounded-2xl p-4 relative bg-zinc-50">
-              <span className="absolute -top-3 left-4 bg-zinc-900 text-white text-[10px] px-2 py-1 rounded-full">POPULAR - 10K</span>
-              <div className="font-bold">Standard</div><div className="text-2xl font-black">Rs 10,000</div><div className="text-xs text-zinc-600 mt-2 font-bold">6000 Credits = 60 Videos x 4min (100cr each)<br/>1080p, No Watermark, All 14 Workflows, 80+ Voices<br/>No watermark</div>
-            </div>
-            <div className="border rounded-2xl p-4">
-              <div className="font-bold">Premium</div><div className="text-2xl font-black">Rs 18,000</div><div className="text-xs text-zinc-500 mt-2"><b>30,000 Credits Unlimited 1 Month</b><br/>4K, API, Series Auto, Long to Short Highlight ALL</div>
-            </div>
-            <button onClick={()=>setShowPlans(false)} className="md:col-span-3 bg-zinc-900 text-white py-3 rounded-xl font-bold">Close - Continue Creating</button>
+        <div style={{position:"fixed", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:100, padding:12}} onClick={()=>setShowPlans(false)}>
+          <div style={{background:"#fff", borderRadius:20, padding:16, width:"100%", maxWidth:600, display:"grid", gridTemplateColumns:"1fr 1fr", gap:10}} onClick={e=>e.stopPropagation()}>
+            <div style={{gridColumn:"1 / span 2", fontWeight:900, fontSize:16, marginBottom:4}}>Plans - Flikibaap vs Fliki</div>
+            <div style={{border:"1px solid #e5e5e5", borderRadius:14, padding:12}}><div style={{fontWeight:800}}>Free</div><div style={{fontWeight:900, fontSize:20}}>Rs 0</div><div style={{fontSize:11, color:"#666", marginTop:4}}>100 Credits = 1 Video<br/>720p, Watermark</div></div>
+            <div style={{border:"2px solid #111", borderRadius:14, padding:12, background:"#FCFCF9"}}><div style={{fontWeight:800}}>Standard <span style={{background:"#FF2D6B", color:"#fff", fontSize:8, padding:"2px 6px", borderRadius:10}}>POPULAR</span></div><div style={{fontWeight:900, fontSize:20}}>Rs 10,000</div><div style={{fontSize:11, color:"#111", marginTop:4, fontWeight:600}}>6000 Credits = 60 Videos x 4min<br/>Fliki me sirf 180 credits! Tum 33x zyada</div></div>
+            <div style={{gridColumn:"1 / span 2", border:"1px solid #e5e5e5", borderRadius:14, padding:12}}><div style={{fontWeight:800}}>Premium - Rs 18,000</div><div style={{fontSize:11, color:"#666", marginTop:2}}>30,000 Credits Unlimited 1 Month, 4K, API, Series Auto, Long to Short Highlight ALL</div></div>
+            <button onClick={()=>setShowPlans(false)} style={{gridColumn:"1 / span 2", background:"#111", color:"#fff", padding:12, borderRadius:12, fontWeight:800, border:0}}>Close</button>
           </div>
         </div>
       )}
