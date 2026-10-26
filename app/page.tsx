@@ -2,59 +2,100 @@
 import { useState } from 'react';
 
 export default function Home() {
-  const [topic, setTopic] = useState('');
-  const [script, setScript] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [copilotInput, setCopilotInput] = useState('');
 
-  const gen = () => {
-    if(!topic){ alert('Topic likho'); return; }
-    setLoading(true);
-    setTimeout(()=>{
-      let t = topic;
-      // 600 WORD REAL SCRIPT GENERATOR
-      let s = 'TOPIC: ' + t + '\nLENGTH: 600 WORDS - PERFECT CRIME SCRIPT\n\n';
-      s += '--- HOOK (0:00 - 0:45) | 120 WORDS ---\n';
-      s += 'Lahore, DHA Phase 6. Villa No 3. 3 saal se band. Log kehte hain raat ko wahan se cheekhne ki awazen aati hain. Lekin 15 July ki raat ko jo hua, usne police ko bhi hila diya. Ek larki, ek phone call, aur Villa No 3 ka woh kamra jiska darwaza 3 saal se nahi khula. Kya hua tha andar? Aaj ye raaz khulega. Video ko end tak dekho, kyunki aakhri 30 seconds me ek aisa twist hai jo aapki soch badal dega.\n\n';
-      
-      s += '--- SCENE 1 - ENTRY (0:45 - 2:00) | 150 WORDS ---\n';
-      s += 'Ali, 24 saal ka property dealer. Usay call aayi: "Villa No 3 sale karna hai, urgent." Malik bahar mulk hai. Ali ne chabi li aur sham 6 baje villa pohoncha. Bahar se villa normal tha. Lekin andar dakhil hote hi ajeeb smell. Gard har cheez par. Drawing room me purani tasveerein ulti latki hui. Ali ne upar jane ka socha. Pehli manzil par 2 kamre khule, teesra kamra band. Uspar likha tha "PRIVATE - DO NOT OPEN". Ali ne kaha malik ne mana kiya hai, nahi kholna. Lekin usi kamre se halki si awaz... jaise koi andar ho. Kya Villa No 3 me koi rehta hai?\n\n';
+  const features = [
+    { icon: '📝', title: 'Script to Video', desc: 'Paste script, get 4K video', color: '#e50914' },
+    { icon: '💡', title: 'Idea to Video', desc: '1 line idea = Full video', color: '#00d4ff' },
+    { icon: '🎙️', title: 'Audio to Video', desc: 'Your voice = Viral video', color: '#ff00a0' },
+    { icon: '🏷️', title: 'Title to Video', desc: 'Title dalo, video ready', color: '#ffaa00' },
+    { icon: '✂️', title: 'Editor + Preview', desc: 'Pro timeline editing', color: '#00ff88' },
+    { icon: '🔄', title: 'Re-Generate', desc: '1 click me naya version', color: '#8b5cf6' },
+  ];
 
-      s += '--- SCENE 2 - INVESTIGATION (2:00 - 3:30) | 160 WORDS ---\n';
-      s += 'Ali ne padosi se pucha. Padosi budha admi bola: "Beta is villa me 2021 me ek family rehti thi. Husband Dubai, wife aur beti yahan. Ek raat beti laapata ho gayi. Police aayi, kuch nahi mila. Maa pagal ho gayi aur villa chor ke chali gayi. Tab se ye band hai." Ali ke rongte khade ho gaye. Usne police record check karwaya. Case File No 347/21 - Larki age 19, naam Zara. Aakhri baar Villa No 3 me dekhi gayi. Uska phone aakhri dafa isi villa me on tha. Police ne villa search kiya tha lekin teesra kamra khula hi nahi tha. Kyun? Kyunki uski chabi kabhi mili hi nahi. Aur aaj Ali ke hath me wohi chabi thi jo malik ne di thi. Kya Ali ko woh darwaza kholna chahiye?\n\n';
-
-      s += '--- SCENE 3 - CLIMAX (3:30 - 5:00) | 170 WORDS ---\n';
-      s += 'Ali ne himmat karke darwaza khola. Andar andhera. Torch jalayi. Dekha to pair sun ho gaye. Kamre me ek diary, ek laal joota, aur deewar par khun se likha hua: "HELP ME". Diary kholi to pehla safha: "Mama mujhe is kamre me band kar diya hai, papa ne kaha me bahar nahi ja sakti." Har safhe par madad ki appeal. Aakhri safha par tarikh: 14 July 2021. Matlab 3 saal pehle. Ali ne foran police ko call ki. Police ne deewar todi to andar se ek chota sa bunker nikla. Usme... me abhi bata nahi sakta, ye YouTube policy ke khilaf hai. Lekin itna samajh lo, Villa No 3 ka raaz sirf crime nahi, ek family ka zulm tha. Zara aaj bhi zinda hai ya nahi? Iska jawab Part 2 me dunga. Agar aapko Part 2 chahiye to comment me likho "VILLA NO 3 PART 2".\n\n';
-
-      s += '--- OUTRO (5:00 - 6:00) | 100 WORDS ---\n';
-      s += 'To dosto ye thi kahani Villa No 3 ki. Ye sirf ek villa nahi, ek nishan hai ke kaise paisa aur izzat ke peeche log apni aulad ko bhi qurban kar dete hain. Is kahani se humein sabaq milta hai ke kabhi bhi kisi band darwaze ko nazar andaz mat karo. Agar aapke aas paas koi Villa No 3 jaisa hai to hoshiyar raho. Video achi lagi to LIKE, SHARE aur SUBSCRIBE zaroor karna. Bell icon dabana mat bhoolna. Milte hain Part 2 me. Allah Hafiz.\n\n[ TOTAL WORDS: ~ 600-650 | READY FOR VOICE + VIDEO ]';
-
-      // Generic fallback if topic is not Villa No 3
-      if(!t.toLowerCase().includes('villa')){
-        s = 'TOPIC: ' + t + '\nLENGTH: 600 WORDS\n\n';
-        s += 'HOOK: ' + t + ' ke bare me jo me batane wala hun, wo aapne pehle kabhi nahi suna.\n\n';
-        s += 'STORY: Baat shuru hoti hai ' + t + ' se. Log isay aam samajhte hain lekin haqeeqat me ye ek gehra raaz hai. Ek shakhs tha jo ' + t + ' ki talash me nikla. Usne din raat mehnat ki.\n\n';
-        s += 'CLIMAX: Phir ek din ' + t + ' ne uski zindagi badal di. Jo hua wo kisi ne socha bhi nahi tha. Police, log, media sab hairan.\n\n'.repeat(5);
-        s += 'ENDING: To ye thi kahani ' + t + ' ki. Comment me batao kaisi lagi.';
-      }
-
-      setScript(s);
-      setLoading(false);
-    }, 800);
+  const handleCopilot = (text: string) => {
+    setCopilotInput(text);
+    const el = document.getElementById('copilot-section');
+    if(el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div style={{background:'#000',minHeight:'100vh',color:'#fff',padding:'15px'}}>
-      <div style={{maxWidth:'750px',margin:'0 auto'}}>
-        <div style={{textAlign:'center',padding:'10px'}}>
-          <h1 style={{color:'#e50914',margin:'0'}}>FLIKIBAAP PRO MAX</h1>
-          <p style={{fontSize:'11px',opacity:0.5,letterSpacing:'1px'}}>TRUSTED BY 15000+ CREATORS • VILLA NO 3 SPECIAL EDITION</p>
+    <main style={{ background: '#050507', minHeight: '100vh', color: 'white', fontFamily: 'Inter, sans-serif', overflowX: 'hidden' }}>
+      {/* NAVBAR */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px', borderBottom: '1px solid #151515', background: 'rgba(5,5,7,0.9)', backdropFilter: 'blur(20px)', position: 'sticky', top: 0, zIndex: 50 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #e50914, #ff3b3b)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '20px', boxShadow: '0 0 20px rgba(229,9,20,0.4)' }}>F</div>
+          <div>
+            <div style={{ fontWeight: '900', fontSize: '17px', letterSpacing: '0.5px' }}>FLIKIBAAP</div>
+            <div style={{ fontSize: '9px', opacity: 0.5, letterSpacing: '2px', marginTop: '-2px' }}>10X FLIKI • PRO MAX</div>
+          </div>
+          <div style={{ marginLeft: '20px', background: '#111', border: '1px solid #222', padding: '5px 10px', borderRadius: '20px', fontSize: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '6px', height: '6px', background: '#00ff88', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 8px #00ff88' }}></span>
+            3,142 ONLINE • SYSTEM LIVE
+          </div>
         </div>
-        <div style={{background:'#111',padding:'16px',borderRadius:'14px',marginTop:'15px',border:'1px solid #222'}}>
-          <textarea value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic: Villa No 3 crime story 600 word perfect script" style={{width:'100%',height:'90px',background:'#000',color:'#fff',border:'1px solid #333',borderRadius:'10px',padding:'12px',fontSize:'14px'}}/>
-          <button onClick={gen} style={{width:'100%',background:'linear-gradient(90deg,#e50914,#ff2a2a)',color:'#fff',border:'none',padding:'14px',borderRadius:'10px',marginTop:'10px',fontWeight:'bold',fontSize:'15px'}}>{loading?'✍️ 600 Words Likhe Ja Rahe Hain...':'🔥 GENERATE 600 WORDS PERFECT SCRIPT'}</button>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <span style={{ fontSize: '12px', opacity: 0.6 }} className="hidden-mobile">3 Videos Free • No Card</span>
+          <button style={{ background: 'white', color: 'black', border: 'none', padding: '10px 18px', borderRadius: '24px', fontWeight: '800', fontSize: '13px' }}>Dashboard →</button>
         </div>
-        {script && <div style={{background:'#0f0f0f',padding:'16px',borderRadius:'12px',marginTop:'14px',border:'1px solid #333',whiteSpace:'pre-wrap',fontSize:'14px',lineHeight:'1.8'}}>{script}<button onClick={()=>{navigator.clipboard.writeText(script); alert('Copied 600 words!');}} style={{width:'100%',marginTop:'12px',background:'#222',color:'#fff',border:'none',padding:'10px',borderRadius:'8px'}}>📋 Copy 600 Words Script</button></div>}
-      </div>
-    </div>
+      </nav>
+
+      {/* HERO - ADVANCED SHOW */}
+      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px 20px', textAlign: 'center' }}>
+        <div style={{ display: 'inline-flex', background: 'linear-gradient(90deg, #111, #1a1a1a)', border: '1px solid #252525', padding: '8px 14px', borderRadius: '24px', fontSize: '11px', gap: '8px', alignItems: 'center', marginBottom: '22px' }}>
+          <span style={{ background: '#e50914', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800' }}>NEW</span>
+          FLIKI SE 10X ADVANCED • DIMAGH WALA AI • MONETIZATION SAFE
+        </div>
+        
+        <h1 style={{ fontSize: 'clamp(32px, 6vw, 64px)', fontWeight: '900', lineHeight: '0.95', letterSpacing: '-2px', margin: 0 }}>
+          Jo Socho Ge, <br/>
+          <span style={{ background: 'linear-gradient(90deg, #e50914, #ff6b6b, #ffa502)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AI Khud Bana Dega.</span>
+        </h1>
+        <p style={{ opacity: 0.6, fontSize: '16px', marginTop: '16px', maxWidth: '650px', marginInline: 'auto', lineHeight: '1.5' }}>
+          Fliki purana hai. Flikibaap me Copilot hai. Sirf likho "5'7 body" -> AI samjhega ye Health niche hai aur viral editing khud kar dega. No dummy.
+        </p>
+
+        {/* COPILOT BAR - MAIN FEATURE */}
+        <div id="copilot-section" style={{ maxWidth: '750px', margin: '35px auto 0', background: 'linear-gradient(180deg, #161616, #0e0e0e)', border: '1px solid #2a2a2a', borderRadius: '20px', padding: '18px', boxShadow: '0 30px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#080808', border: '1px solid #222', borderRadius: '14px', padding: '14px 16px' }}>
+            <span style={{ fontSize: '20px' }}>🤖</span>
+            <input value={copilotInput} onChange={e=>setCopilotInput(e.target.value)} placeholder='Yahan kuch bhi likho... "Ali ny bike leay k galti ki 8 mint ki story" ya "Idea do horror niche ke liye"...' style={{ flex: 1, background: 'transparent', border: 'none', color: 'white', outline: 'none', fontSize: '15px' }} />
+            <button onClick={()=>{if(copilotInput) alert('Phase 1 me Copilot UI ready hai! Phase 2 me Real AI Brain connect hoga. Abhi ke liye: ' + copilotInput)}} style={{ background: 'white', color: 'black', border: 'none', padding: '10px 18px', borderRadius: '10px', fontWeight: '800', fontSize: '13px' }}>Generate ✨</button>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+            <button onClick={()=>handleCopilot('5\'7 body ke liye workout plan video')} style={{ background: '#1a1a1a', border: '1px solid #222', color: '#aaa', padding: '6px 12px', borderRadius: '20px', fontSize: '11px' }}>💪 5'7 body</button>
+            <button onClick={()=>handleCopilot('Villa No 3 horror story 8 mint ki')} style={{ background: '#1a1a1a', border: '1px solid #222', color: '#aaa', padding: '6px 12px', borderRadius: '20px', fontSize: '11px' }}>👻 Villa No 3 - 8 min</button>
+            <button onClick={()=>handleCopilot('Islamic - Namaz ki ahmiyat par emotional video')} style={{ background: '#1a1a1a', border: '1px solid #222', color: '#aaa', padding: '6px 12px', borderRadius: '20px', fontSize: '11px' }}>🕌 Islamic Emotional</button>
+            <button onClick={()=>handleCopilot('Best unique topics for health niche')} style={{ background: '#1a1a1a', border: '1px solid #222', color: '#aaa', padding: '6px 12px', borderRadius: '20px', fontSize: '11px' }}>🔥 Best Unique Topics</button>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES GRID - ADVANCED SHOW */}
+      <section style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px' }}>
+          {features.map((f,i)=>(
+            <div key={i} onClick={()=>handleCopilot(f.title + ' banao')} style={{ background: 'linear-gradient(180deg, #131313, #0a0a0a)', border: '1px solid #1e1e1e', borderRadius: '16px', padding: '18px', cursor: 'pointer', transition: '0.2s' }}>
+              <div style={{ width: '42px', height: '42px', background: `${f.color}15`, border: `1px solid ${f.color}30`, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>{f.icon}</div>
+              <div style={{ fontWeight: '700', marginTop: '12px', fontSize: '14px' }}>{f.title}</div>
+              <div style={{ opacity: 0.5, fontSize: '11px', marginTop: '4px' }}>{f.desc}</div>
+              <div style={{ marginTop: '10px', fontSize: '11px', color: f.color, fontWeight: '700' }}>Try →</div>
+            </div>
+          ))}
+        </div>
+
+        {/* SUBSCRIPTION TEASER */}
+        <div style={{ marginTop: '30px', background: 'linear-gradient(90deg, #111, #151515)', border: '1px solid #222', borderRadius: '16px', padding: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+            <div><span style={{ opacity: 0.5, fontSize: '11px' }}>FREE PLAN</span><div style={{ fontWeight: '800', fontSize: '14px' }}>3 Videos/Month + Watermark</div></div>
+            <div><span style={{ opacity: 0.5, fontSize: '11px' }}>STANDARD • 10K PKR</span><div style={{ fontWeight: '800', fontSize: '14px' }}>60 Long + 60 Shorts • No Watermark</div></div>
+            <div><span style={{ opacity: 0.5, fontSize: '11px' }}>PREMIUM • 18K PKR</span><div style={{ fontWeight: '800', fontSize: '14px', color: '#e50914' }}>Unlimited • Clone Voice</div></div>
+          </div>
+          <button style={{ background: '#e50914', color: 'white', border: 'none', padding: '12px 20px', borderRadius: '12px', fontWeight: '800' }}>Upgrade Now</button>
+        </div>
+      </section>
+
+      <footer style={{ textAlign: 'center', opacity: 0.2, fontSize: '11px', padding: '30px' }}>© 2026 FLIKIBAAP PRO MAX • Phase 1 Live • Phase 2: Real AI Brain Connecting... • Built in Pakistan</footer>
+    </main>
   );
 }
