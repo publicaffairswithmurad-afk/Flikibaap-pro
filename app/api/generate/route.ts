@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
-      return NextResponse.json({ script: 'DEBUG: Vercel me GROQ_API_KEY bilkul nahi mili!' });
+      return NextResponse.json({ script: 'DEBUG: Vercel me GROQ_API_KEY nahi mili!' });
     }
 
     let words = 600;
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'llama-3.1-8b-instant',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.85,
         max_tokens: 3500
