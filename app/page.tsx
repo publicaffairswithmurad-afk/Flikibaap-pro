@@ -5,128 +5,83 @@ export default function Home() {
   const [topic, setTopic] = useState("");
   const [script, setScript] = useState("");
   const [loading, setLoading] = useState(false);
-  const [activeTool, setActiveTool] = useState("copilot");
-  const [words, setWords] = useState("700");
-  const [niche, setNiche] = useState("Islamic");
+  const [active, setActive] = useState("copilot");
 
   const generate = async () => {
-    if (!topic) return alert("Topic likho pehle!");
+    if (!topic.trim()) return alert("Pehle topic likho!");
     setLoading(true);
     setScript("");
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: `${topic} | ${niche} | ${words} words` }),
+        body: JSON.stringify({ topic }),
       });
       const data = await res.json();
       setScript(data.script);
-    } catch (e) {
-      setScript("Error agaya, dubara try karo");
-    }
+    } catch { setScript("Error - dubara try karo"); }
     setLoading(false);
   };
 
   const tools = [
-    { id: "copilot", name: "AI Copilot", icon: "🤖", desc: "Script Writer", active: true },
-    { id: "script2video", name: "Script to Video", icon: "🎬", desc: "Auto Video", coming: true },
-    { id: "audio2video", name: "Audio to Video", icon: "🎧", desc: "Audio se Video", coming: true },
-    { id: "editor", name: "Video Editor", icon: "✂️", desc: "Pro Editor", coming: true },
-    { id: "voice", name: "AI Voiceover", icon: "🎤", desc: "Urdu Voices", coming: true },
-    { id: "thumbnail", name: "Thumbnail Maker", icon: "🖼️", desc: "Viral Thumbs", coming: true },
+    { id: "copilot", n: "AI Copilot", d: "Script Writer", i: "🤖" },
+    { id: "s2v", n: "Script to Video", d: "Auto Video", i: "🎬", soon: true },
+    { id: "a2v", n: "Audio to Video", d: "Audio se Video", i: "🎧", soon: true },
+    { id: "edit", n: "Video Editor", d: "Pro Editor", i: "✂️", soon: true },
+    { id: "voice", n: "AI Voiceover", d: "Urdu Voices", i: "🎤", soon: true },
+    { id: "thumb", n: "Thumbnail Maker", d: "Viral Thumbs", i: "🖼️", soon: true },
   ];
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B] text-white flex">
+    <div style={{minHeight:"100vh", background:"#07070A", color:"white", fontFamily:"sans-serif", display:"flex"}}>
       {/* Sidebar */}
-      <div className="w-[260px] bg-[#111113] border-r border-zinc-800 p-4 flex flex-col">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-orange-500 flex items-center justify-center font-bold">F</div>
-          <span className="font-bold text-xl">Flikibaap</span>
-          <span className="text-[10px] bg-gradient-to-r from-purple-600 to-orange-500 px-2 py-0.5 rounded-full">PRO</span>
+      <div style={{width:250, background:"#111114", borderRight:"1px solid #222", padding:16, display:"flex", flexDirection:"column"}}>
+        <div style={{display:"flex", alignItems:"center", gap:8, marginBottom:28, fontWeight:800, fontSize:20}}>
+          <div style={{width:32, height:32, borderRadius:8, background:"linear-gradient(135deg,#7C3AED,#F97316)", display:"flex", alignItems:"center", justifyContent:"center"}}>F</div>
+          Flikibaap <span style={{fontSize:9, background:"linear-gradient(90deg,#7C3AED,#F97316)", padding:"2px 6px", borderRadius:20}}>PRO</span>
         </div>
-        
-        <div className="space-y-2 flex-1">
-          {tools.map(t => (
-            <button key={t.id} onClick={()=>setActiveTool(t.id)}
-              className={`w-full text-left p-3 rounded-xl flex items-center gap-3 transition ${activeTool===t.id ? 'bg-zinc-800 border border-zinc-700' : 'hover:bg-zinc-800/50'}`}>
-              <span className="text-xl">{t.icon}</span>
-              <div className="flex-1">
-                <div className="text-sm font-medium flex items-center gap-2">{t.name} {t.coming && <span className="text-[9px] bg-zinc-700 px-1.5 py-0.5 rounded">SOON</span>}</div>
-                <div className="text-[11px] text-zinc-400">{t.desc}</div>
-              </div>
-            </button>
+        <div style={{display:"grid", gap:8}}>
+          {tools.map(t=>(
+            <div key={t.id} onClick={()=>setActive(t.id)} style={{padding:12, borderRadius:12, cursor:"pointer", background: active===t.id ? "#1F1F23" : "transparent", border: active===t.id ? "1px solid #333" : "1px solid transparent"}}>
+              <div style={{fontSize:13, fontWeight:600}}>{t.i} {t.n} {t.soon && <span style={{fontSize:8, background:"#333", padding:"2px 5px", borderRadius:4}}>SOON</span>}</div>
+              <div style={{fontSize:11, color:"#888", marginTop:2}}>{t.d}</div>
+            </div>
           ))}
         </div>
-        <div className="mt-auto p-3 bg-gradient-to-br from-purple-600/20 to-orange-500/20 rounded-xl border border-purple-500/20">
-          <div className="text-sm font-bold">Upgrade to Pro</div>
-          <div className="text-xs text-zinc-400 mb-2">Unlimited videos & voices</div>
-          <button className="w-full bg-white text-black text-xs py-2 rounded-lg font-bold">Upgrade Now</button>
+        <div style={{marginTop:"auto", padding:12, background:"linear-gradient(135deg,rgba(124,58,237,0.15),rgba(249,115,22,0.15))", borderRadius:12, border:"1px solid rgba(124,58,237,0.2)"}}>
+          <div style={{fontSize:13, fontWeight:700}}>Upgrade to Pro</div>
+          <div style={{fontSize:11, color:"#999"}}>Unlimited videos</div>
+          <button style={{width:"100%", marginTop:8, background:"white", color:"black", border:0, padding:"8px", borderRadius:8, fontWeight:700, fontSize:12}}>Upgrade Now</button>
         </div>
       </div>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col">
-        <div className="h-14 border-b border-zinc-800 flex items-center justify-between px-6">
-          <div className="text-sm text-zinc-400">AI Copilot / <span className="text-white">New Script</span></div>
-          <div className="flex gap-2">
-            <button onClick={()=>{navigator.clipboard.writeText(script)}} className="text-xs bg-zinc-800 px-3 py-1.5 rounded-lg">📋 Copy</button>
-            <button className="text-xs bg-white text-black px-3 py-1.5 rounded-lg font-bold">Export Video →</button>
+      <div style={{flex:1, display:"flex", flexDirection:"column"}}>
+        <div style={{height:50, borderBottom:"1px solid #222", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 20px"}}>
+          <div style={{fontSize:12, color:"#888"}}>AI Copilot / <span style={{color:"white"}}>New Script</span></div>
+          <div style={{display:"flex", gap:8}}>
+            <button onClick={()=>navigator.clipboard.writeText(script)} style={{fontSize:12, background:"#1E1E22", border:"1px solid #333", color:"white", padding:"6px 12px", borderRadius:8}}>📋 Copy</button>
+            <button style={{fontSize:12, background:"white", color:"black", padding:"6px 12px", borderRadius:8, fontWeight:700}}>Export Video →</button>
           </div>
         </div>
 
-        <div className="flex flex-1">
-          {/* Input Area */}
-          <div className="w-[380px] border-r border-zinc-800 p-6 space-y-5">
-            <h2 className="font-bold text-lg">Create Viral Script</h2>
+        <div style={{display:"flex", flex:1}}>
+          <div style={{width:340, borderRight:"1px solid #222", padding:20}}>
+            <h2 style={{fontSize:18, fontWeight:700, marginBottom:20}}>Create Viral Script</h2>
             
-            <div>
-              <label className="text-xs text-zinc-400">Niche</label>
-              <select value={niche} onChange={e=>setNiche(e.target.value)} className="w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm">
-                <option>Islamic</option><option>Horror</option><option>History</option><option>Motivational</option><option>Crime</option>
-              </select>
-            </div>
+            <label style={{fontSize:11, color:"#888"}}>Topic / Idea</label>
+            <textarea value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Ex: Hazrat Ali ka insaf, Ek khofnak qabrastan ka waqia..." style={{width:"100%", marginTop:6, background:"#151519", border:"1px solid #2A2A30", borderRadius:12, padding:12, color:"white", height:110, fontSize:13}} />
 
-            <div>
-              <label className="text-xs text-zinc-400">Duration</label>
-              <select value={words} onChange={e=>setWords(e.target.value)} className="w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm">
-                <option value="400">400 Words - 3 Min (Short)</option>
-                <option value="700">700 Words - 6 Min (Recommended)</option>
-                <option value="1100">1100 Words - 9 Min (Long)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="text-xs text-zinc-400">Topic / Idea</label>
-              <textarea value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Ex: Hazrat Ali ka insaf, Ek khofnak qabrastan ka waqia..." className="w-full mt-1 bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm h-32 resize-none" />
-            </div>
-
-            <button onClick={generate} disabled={loading} className="w-full bg-gradient-to-r from-purple-600 to-orange-500 py-3 rounded-xl font-bold text-sm disabled:opacity-50">
+            <button onClick={generate} disabled={loading} style={{width:"100%", marginTop:16, background:"linear-gradient(90deg,#7C3AED,#F97316)", border:0, padding:"12px", borderRadius:12, fontWeight:800, color:"white", cursor:"pointer"}}>
               {loading ? "✨ Writing Magic..." : "✨ Generate Viral Script"}
             </button>
-
-            <div className="text-[11px] text-zinc-500">Tip: Topic jitna detailed hoga, script utna viral hoga.</div>
+            <div style={{fontSize:10, color:"#666", marginTop:10}}>Tip: Topic detail me likho to zyada viral banega</div>
           </div>
 
-          {/* Output Area */}
-          <div className="flex-1 bg-[#0E0E10] p-6 overflow-auto">
-            {!script && !loading && (
-              <div className="h-full flex flex-col items-center justify-center text-zinc-500">
-                <div className="text-6xl mb-4">🎬</div>
-                <div className="font-bold text-zinc-300">Your Script Will Appear Here</div>
-                <div className="text-xs mt-2">Professional, Roman Urdu, Hook + Story + CTA</div>
-              </div>
-            )}
-            {loading && <div className="animate-pulse space-y-3"><div className="h-4 bg-zinc-800 rounded w-3/4"></div><div className="h-4 bg-zinc-800 rounded"></div><div className="h-4 bg-zinc-800 rounded w-5/6"></div></div>}
-            {script && (
-              <div className="bg-[#151517] border border-zinc-800 rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="text-xs text-zinc-400">{niche} • {words} words • Roman Urdu</div>
-                  <div className="text-xs text-green-400">● Live</div>
-                </div>
-                <pre className="whitespace-pre-wrap text-sm leading-7 font-sans text-zinc-100">{script}</pre>
-              </div>
-            )}
+          <div style={{flex:1, background:"#0E0E12", padding:20, overflowY:"auto"}}>
+            {!script && !loading && <div style={{height:"100%", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", color:"#555"}}><div style={{fontSize:48}}>🎬</div><div style={{fontWeight:700, color:"#AAA", marginTop:10}}>Your Script Will Appear Here</div><div style={{fontSize:11, marginTop:4}}>Professional Roman Urdu • Hook + Story + CTA</div></div>}
+            {loading && <div style={{color:"#888", fontSize:13}}>⏳ AI soch raha hai, behtareen script bana raha hai...</div>}
+            {script && <div style={{background:"#151519", border:"1px solid #2A2A30", borderRadius:16, padding:18}}><pre style={{whiteSpace:"pre-wrap", fontFamily:"sans-serif", fontSize:14, lineHeight:1.8, color:"#EAEAEA"}}>{script}</pre></div>}
           </div>
         </div>
       </div>
